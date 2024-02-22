@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import Animated, { FadeInDown } from 'react-native-reanimated'
+import CachedImage from '../helpers/image'
 
-export default function Categories({ activeCategory, setActiveCategory, categories }) {
+export default function Categories({ activeCategory, handleChangeCategory, categories }) {
   return (
     <Animated.View entering={FadeInDown.duration(500).springify()}>
       <ScrollView
@@ -17,11 +18,11 @@ export default function Categories({ activeCategory, setActiveCategory, categori
             <TouchableOpacity
               key={category.strCategory}
               className="flex items-center space-y-1"
-              onPress={() => setActiveCategory(category.strCategory)}
+              onPress={() => handleChangeCategory(category.strCategory)}
             >
               <View className={`rounded-full p-[6px] ${isActive ? 'bg-amber-400' : 'bg-black/10'}`}>
-                <Image
-                  source={{ uri: category.strCategoryThumb }}
+                <CachedImage
+                  uri={category.strCategoryThumb}
                   style={{ width: hp(6), height: hp(6) }}
                   className="rounded-full"
                 />

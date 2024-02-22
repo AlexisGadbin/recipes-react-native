@@ -6,10 +6,12 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import avatar from '../../assets/images/avatar.png'
 import Categories from '../components/categories'
+import Recipes from '../components/recipes'
 
 export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState('Beef')
   const [categories, setCategories] = useState([])
+  const [meals, setMeals] = useState([])
 
   const getCategories = async () => {
     try {
@@ -22,8 +24,28 @@ export default function HomeScreen() {
     }
   }
 
+  const getRecipes = async (category) => {
+    try {
+      const response = await axios.get(
+        `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+      )
+      if (response && response.data) {
+        setMeals(response.data.meals)
+      }
+    } catch (error) {
+      setCategories([])
+    }
+  }
+
+  const handleChangeCategory = (category) => {
+    setMeals([])
+    setActiveCategory(category)
+    getRecipes(category)
+  }
+
   useEffect(() => {
     getCategories()
+    getRecipes(activeCategory)
   }, [])
 
   return (
@@ -85,16 +107,21 @@ export default function HomeScreen() {
             <MagnifyingGlassIcon size={hp(2.5)} color="gray" strokeWidth={3} />
           </View>
         </View>
+        {categories.length > 0 && (
+          <>
+            <View>
+              <Categories
+                activeCategory={activeCategory}
+                handleChangeCategory={handleChangeCategory}
+                categories={categories}
+              />
+            </View>
 
-        <View>
-          {categories.length > 0 && (
-            <Categories
-              activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
-              categories={categories}
-            />
-          )}
-        </View>
+            <View>
+              <Recipes meals={meals} />
+            </View>
+          </>
+        )}
       </ScrollView>
     </View>
   )
